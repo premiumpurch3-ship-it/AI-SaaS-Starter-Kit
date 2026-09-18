@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI SaaS Starter Kit — Spec Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* default: "blue-line" print — navy ink on cream paper */
+    --bg: #F1ECDF;
+    --bg-grid: #E4DCC9;
+    --ink: #1E3A57;
+    --ink-soft: #3F5E7A;
+    --line: #6B84A0;
+    --line-faint: #B9C4CE;
+    --panel: #FBF8F0;
+    --stamp: #A8402F;
+    --accent: #1E3A57;
+    --font-head: 'Space Grotesk', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      /* classic blueprint — cyan/white ink on navy */
+      --bg: #0E1D30;
+      --bg-grid: #12253C;
+      --ink: #E8F1F8;
+      --ink-soft: #9FC3DD;
+      --line: #4C7EA3;
+      --line-faint: #23425F;
+      --panel: #102439;
+      --stamp: #E2664F;
+      --accent: #7FD4EE;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #0E1D30;
+    --bg-grid: #12253C;
+    --ink: #E8F1F8;
+    --ink-soft: #9FC3DD;
+    --line: #4C7EA3;
+    --line-faint: #23425F;
+    --panel: #102439;
+    --stamp: #E2664F;
+    --accent: #7FD4EE;
+  }
+  :root[data-theme="light"]{
+    --bg: #F1ECDF;
+    --bg-grid: #E4DCC9;
+    --ink: #1E3A57;
+    --ink-soft: #3F5E7A;
+    --line: #6B84A0;
+    --line-faint: #B9C4CE;
+    --panel: #FBF8F0;
+    --stamp: #A8402F;
+    --accent: #1E3A57;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background-color:var(--bg);
+    background-image:
+      repeating-linear-gradient(0deg, var(--bg-grid) 0px, var(--bg-grid) 1px, transparent 1px, transparent 32px),
+      repeating-linear-gradient(90deg, var(--bg-grid) 0px, var(--bg-grid) 1px, transparent 1px, transparent 32px);
+    color:var(--ink);
+    font-family:var(--font-mono);
+    font-size:15px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; }
+  .sheet{
+    max-width:1180px;
+    margin:0 auto;
+    padding:18px 18px 60px;
+  }
+  .frame{
+    border:2px solid var(--line);
+    position:relative;
+    padding:0;
+  }
+  .frame::before{
+    content:"";
+    position:absolute; inset:6px;
+    border:1px solid var(--line-faint);
+    pointer-events:none;
+  }
+
+  /* ---------- title block ---------- */
+  .titleblock{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:24px;
+    padding:28px 30px 24px;
+    border-bottom:2px solid var(--line);
+  }
+  .tb-left .kicker{
+    font-family:var(--font-mono);
+    font-size:12px;
+    letter-spacing:.04em;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+  }
+  .tb-left h1{
+    font-family:var(--font-head);
+    font-weight:700;
+    font-size:clamp(32px, 5vw, 54px);
+    line-height:1.02;
+    margin:0;
+    max-width:14ch;
+  }
+  .tb-right{
+    display:grid;
+    grid-template-columns:auto auto;
+    gap:4px 18px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    border-left:1px solid var(--line-faint);
+    padding-left:18px;
+  }
+  .tb-right dt{ opacity:.75; }
+  .tb-right dd{ margin:0; color:var(--ink); font-weight:600; }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:34px 30px 10px;
+    border-bottom:2px solid var(--line);
+  }
+  .hero p.pitch{
+    font-family:var(--font-head);
+    font-weight:500;
+    font-size:clamp(18px, 2.4vw, 24px);
+    max-width:56ch;
+    margin:0 0 28px;
+    color:var(--ink);
+  }
+  .cta-row{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    margin:26px 0 34px;
+  }
+  .btn{
+    font-family:var(--font-mono);
+    font-size:13.5px;
+    font-weight:600;
+    padding:12px 20px;
+    border:1.5px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    cursor:pointer;
+    text-decoration:none;
+    display:inline-block;
+  }
+  .btn.primary{
+    background:var(--ink);
+    color:var(--bg);
+  }
+  .btn:hover{ opacity:.82; }
+
+  .diagram-wrap{
+    overflow-x:auto;
+    padding-bottom:18px;
+  }
+  .diagram-wrap svg{
+    display:block;
+    min-width:640px;
+    width:100%;
+    height:auto;
+  }
+  .diag-box{ fill:var(--panel); stroke:var(--line); stroke-width:1.4; }
+  .diag-line{ stroke:var(--line); stroke-width:1.4; fill:none; }
+  .diag-text{ font-family:var(--font-mono); fill:var(--ink); font-size:12px; }
+  .diag-text.sub{ fill:var(--ink-soft); font-size:10px; }
+  .diag-node circle{ fill:var(--accent); }
+
+  /* ---------- parts list ---------- */
+  .partslist{
+    padding:30px 30px 10px;
+    border-bottom:2px solid var(--line);
+  }
+  .section-label{
+    font-family:var(--font-mono);
+    font-size:12px;
+    color:var(--ink-soft);
+    margin:0 0 20px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .section-label::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--line-faint);
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    border-top:1px solid var(--line-faint);
+    border-left:1px solid var(--line-faint);
+    margin-bottom:24px;
+  }
+  .part{
+    border-right:1px solid var(--line-faint);
+    border-bottom:1px solid var(--line-faint);
+    padding:20px 20px 22px;
+    min-height:150px;
+    display:flex;
+    flex-direction:column;
+  }
+  .part .ref{
+    font-size:12px;
+    color:var(--accent);
+    font-weight:600;
+    margin-bottom:10px;
+  }
+  .part h3{
+    font-family:var(--font-head);
+    font-size:17px;
+    font-weight:600;
+    margin:0 0 8px;
+    color:var(--ink);
+  }
+  .part p{
+    margin:0;
+    font-size:13px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+  @media (max-width:820px){
+    .grid{ grid-template-columns:repeat(2,1fr); }
+  }
+  @media (max-width:560px){
+    .grid{ grid-template-columns:1fr; }
+    .tb-right{ border-left:none; padding-left:0; border-top:1px solid var(--line-faint); padding-top:12px; }
+  }
+
+  /* ---------- docs index ---------- */
+  .docs{
+    padding:30px 30px 10px;
+    border-bottom:2px solid var(--line);
+    display:grid;
+    grid-template-columns:1.1fr 1fr;
+    gap:40px;
+  }
+  @media (max-width:760px){ .docs{ grid-template-columns:1fr; } }
+  .docs h2, .partslist h2, .license h2{
+    font-family:var(--font-head);
+    font-size:22px;
+    font-weight:600;
+    margin:0 0 14px;
+  }
+  .docs p.lead{ color:var(--ink-soft); font-size:13.5px; max-width:44ch; margin:0 0 20px; }
+  .index-list{
+    list-style:none;
+    margin:0; padding:0;
+    counter-reset:doc;
+    border-top:1px solid var(--line-faint);
+  }
+  .index-list li{
+    counter-increment:doc;
+    display:flex;
+    gap:14px;
+    align-items:baseline;
+    padding:10px 0;
+    border-bottom:1px solid var(--line-faint);
+    font-size:13.5px;
+  }
+  .index-list li::before{
+    content:counter(doc, decimal-leading-zero);
+    color:var(--accent);
+    font-weight:600;
+    width:2.4em;
+    flex:none;
+  }
+
+  /* ---------- license stamp ---------- */
+  .license{
+    padding:34px 30px;
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:30px;
+    align-items:center;
+  }
+  @media (max-width:700px){ .license{ grid-template-columns:1fr; } }
+  .license p{ color:var(--ink-soft); font-size:13.5px; max-width:52ch; margin:0 0 8px; }
+  .stamp{
+    border:3px double var(--stamp);
+    color:var(--stamp);
+    font-family:var(--font-mono);
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:.03em;
+    text-align:center;
+    padding:14px 22px;
+    transform:rotate(-4deg);
+    white-space:nowrap;
+  }
+  .stamp small{ display:block; font-weight:400; font-size:10px; margin-top:4px; letter-spacing:.08em; }
+
+  /* ---------- footer titleblock ---------- */
+  .footer-tb{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:14px;
+    padding:20px 30px;
+    border-top:2px solid var(--line);
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+  .footer-tb .btn{ padding:9px 16px; font-size:12.5px; }
+
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; } }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="frame">
+
+    <!-- TITLE BLOCK -->
+    <div class="titleblock">
+      <div class="tb-left">
+        <p class="kicker">SPEC SHEET — STARTER KIT</p>
+        <h1>AI SaaS<br>Starter Kit</h1>
+      </div>
+      <dl class="tb-right">
+        <dt>Stack</dt><dd>Next.js + Supabase + Gemini</dd>
+        <dt>Deploy target</dt><dd>Vercel</dd>
+        <dt>Auth</dt><dd>Included</dd>
+        <dt>License</dt><dd>Commercial</dd>
+      </dl>
+    </div>
+
+    <!-- HERO -->
+    <div class="hero">
+      <p class="pitch">A working AI SaaS product, wired end to end — landing page to billing-ready usage limits — so you start from a running app instead of a blank repo.</p>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 1080 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram showing how the kit's modules connect: landing page to authentication to user system to dashboard, which links to the Supabase database and to Gemini AI through an AI chat component, into usage tracking, usage limits, and the demo app, all shipping through the Vercel deployment module.">
+          <!-- connectors -->
+          <path class="diag-line" d="M120,60 H230"/>
+          <path class="diag-line" d="M340,60 H450"/>
+          <path class="diag-line" d="M560,60 H670"/>
+          <path class="diag-line" d="M670,60 V150 H560"/>
+          <path class="diag-line" d="M670,60 V150 H780"/>
+          <path class="diag-line" d="M780,150 V60 H890"/>
+          <path class="diag-line" d="M780,180 V240 H670"/>
+          <path class="diag-line" d="M560,240 H450"/>
+          <path class="diag-line" d="M670,150 V240"/>
+          <path class="diag-line" d="M120,60 V240 H340"/>
+
+          <!-- Landing -->
+          <rect class="diag-box" x="10" y="35" width="110" height="50"/>
+          <text class="diag-text" x="65" y="55" text-anchor="middle">Landing</text>
+          <text class="diag-text sub" x="65" y="70" text-anchor="middle">M-01</text>
+
+          <!-- Auth -->
+          <rect class="diag-box" x="230" y="35" width="110" height="50"/>
+          <text class="diag-text" x="285" y="55" text-anchor="middle">Auth</text>
+          <text class="diag-text sub" x="285" y="70" text-anchor="middle">M-02</text>
+
+          <!-- User system -->
+          <rect class="diag-box" x="450" y="35" width="110" height="50"/>
+          <text class="diag-text" x="505" y="55" text-anchor="middle">User system</text>
+          <text class="diag-text sub" x="505" y="70" text-anchor="middle">M-03</text>
+
+          <!-- Dashboard -->
+          <rect class="diag-box" x="670" y="35" width="110" height="50"/>
+          <text class="diag-text" x="725" y="55" text-anchor="middle">Dashboard</text>
+          <text class="diag-text sub" x="725" y="70" text-anchor="middle">M-04</text>
+
+          <!-- Supabase DB -->
+          <rect class="diag-box" x="890" y="35" width="150" height="50"/>
+          <text class="diag-text" x="965" y="55" text-anchor="middle">Supabase DB</text>
+          <text class="diag-text sub" x="965" y="70" text-anchor="middle">M-05</text>
+
+          <!-- Gemini -->
+          <rect class="diag-box" x="835" y="125" width="130" height="50"/>
+          <text class="diag-text" x="900" y="145" text-anchor="middle">Gemini AI</text>
+          <text class="diag-text sub" x="900" y="160" text-anchor="middle">M-06</text>
+
+          <!-- AI Chat -->
+          <rect class="diag-box" x="615" y="125" width="130" height="50"/>
+          <text class="diag-text" x="680" y="145" text-anchor="middle">AI chat</text>
+          <text class="diag-text sub" x="680" y="160" text-anchor="middle">M-07</text>
+
+          <!-- Usage tracking -->
+          <rect class="diag-box" x="615" y="215" width="130" height="50"/>
+          <text class="diag-text" x="680" y="235" text-anchor="middle">Usage tracking</text>
+          <text class="diag-text sub" x="680" y="250" text-anchor="middle">M-08</text>
+
+          <!-- Usage limits -->
+          <rect class="diag-box" x="835" y="215" width="130" height="50"/>
+          <text class="diag-text" x="900" y="235" text-anchor="middle">Usage limits</text>
+          <text class="diag-text sub" x="900" y="250" text-anchor="middle">M-09</text>
+
+          <!-- Demo app -->
+          <rect class="diag-box" x="450" y="215" width="110" height="50"/>
+          <text class="diag-text" x="505" y="235" text-anchor="middle">Demo app</text>
+          <text class="diag-text sub" x="505" y="250" text-anchor="middle">M-12</text>
+
+          <!-- Vercel -->
+          <rect class="diag-box" x="230" y="215" width="110" height="50"/>
+          <text class="diag-text" x="285" y="235" text-anchor="middle">Vercel deploy</text>
+          <text class="diag-text sub" x="285" y="250" text-anchor="middle">M-11</text>
+        </svg>
+      </div>
+
+      <div class="cta-row">
+        <a class="btn primary" href="#parts">View all modules</a>
+        <a class="btn" href="#docs">Documentation index</a>
+      </div>
+    </div>
+
+    <!-- PARTS LIST -->
+    <div class="partslist" id="parts">
+      <h2>Module list</h2>
+      <p class="section-label">14 modules — ready to run</p>
+      <div class="grid">
+        <div class="part">
+          <div class="ref">M-01</div>
+          <h3>Landing page</h3>
+          <p>A page built to show off your product on day one, not a placeholder screen you replace later.</p>
+        </div>
+        <div class="part">
+          <div class="ref">M-02</div>
+          <h3>Authentication</h3>
+          <p>Sign up, log in, log out and password reset, working out of the box.</p>
+        </div>
+        <div class="part">
+          <div class="ref">M-03</div>
+          <h3>User system</h3>
+          <p>Every user gets their own account and their own data, kept separate and secure by default.</p>
+        </div>
+        <div class="part">
+          <div class="ref">M-04</div>
+          <h3>User dashboard</h3>
+          <p>A responsive dashboard shell, styled and structured, ready for you to add your own screens.</p>
+        </div>
+        <div class="part">
+          <div class="ref">M-05</div>
+          <h3>Supabase database</h3>
+          <p>Postgres, wired in with the schema and migration files already written.</p>
+        </div>
+        <div class="part">
+          <div class="ref">M-06</div>
+          <h3>Gemini AI integration</h3>
+          <p>A secure connection to the Gemini API, ready for you to build AI features on top of.</p>
+        </div>
+        <div class="part">
+          <div class="ref">M-07</div>
+          <h3>AI chat &amp; generation</h3>
+          <p>Reusable chat and content-generation components you can drop into any screen.</p>
+        </div>
+        <div class="part">
+          <div class="ref">M-08</div>
+          <h3>Usage tracking</h3>
+          <p>Every user's AI usage is logged automatically, so you always know who's using what.</p>
+        </div>
+        <div class="part">
+          <div class="ref">M-09</div>
+          <h3>Usage limits</h3>
+          <p>Set caps by plan — Free, Pro, or your own tiers — and enforce them without extra plumbing.</p>
+        </div>
+        <div class="part">
+          <div class="ref">M-10</div>
+          <h3>Environment system</h3>
+          <p>A ready <code>.env.example</code> file with variable validation, so missing config fails loudly, not silently.</p>
+        </div>
+        <div class="part">
+          <div class="ref">M-11</div>
+          <h3>Vercel deployment</h3>
+          <p>Configured to deploy straight to Vercel, from first commit to production.</p>
+        </div>
+        <div class="part">
+          <div class="ref">M-12</div>
+          <h3>Demo AI application</h3>
+          <p>A working example app built on the kit, showing how the pieces fit together in practice.</p>
+        </div>
+        <div class="part">
+          <div class="ref">M-13</div>
+          <h3>Documentation</h3>
+          <p>Step-by-step guides from install to production. Full index below.</p>
+        </div>
+        <div class="part">
+          <div class="ref">M-14</div>
+          <h3>Commercial license</h3>
+          <p>Clear terms for personal use, commercial use, redistribution and resale. Details below.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOCS + LICENSE -->
+    <div class="docs" id="docs">
+      <div>
+        <h2>Documentation index</h2>
+        <p class="lead">Everything you need to go from a fresh clone to a live product, in order.</p>
+        <ol class="index-list">
+          <li>Project installation</li>
+          <li>Supabase setup</li>
+          <li>Gemini API setup</li>
+          <li>Environment variables</li>
+          <li>Local development</li>
+          <li>Vercel deployment</li>
+          <li>Production setup</li>
+        </ol>
+      </div>
+      <div>
+        <h2>What's actually included</h2>
+        <p class="lead">Not a template with instructions to fill in — a demo application that already runs, so you can see every module working before you touch a line of code.</p>
+        <p class="lead">Copy a module, rename it, ship it. The kit is built to be taken apart.</p>
+      </div>
+    </div>
+
+    <!-- LICENSE -->
+    <div class="license">
+      <div>
+        <h2>Commercial license</h2>
+        <p>Use the kit in your own product, personal or commercial. Redistribution and resale terms are spelled out plainly — no legal team required to know what you're allowed to do.</p>
+      </div>
+      <div class="stamp">
+        APPROVED FOR<br>COMMERCIAL USE
+        <small>PERSONAL · COMMERCIAL · RESALE</small>
+      </div>
+    </div>
+
+    <!-- FOOTER TITLE BLOCK -->
+    <div class="footer-tb">
+      <span>AI SaaS Starter Kit — spec sheet — end of document</span>
+      <a class="btn primary" href="#parts">Get the kit</a>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
